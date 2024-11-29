@@ -4,6 +4,8 @@
 
 ## 📖 Instructions
 
+Review the instructions below and also some of the backend code that is already provided.
+
 ### Part I (No rooms)
 
 1. Go to the backend directory and run `npm install` to install all the necessary packages.
