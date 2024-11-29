@@ -22,7 +22,7 @@ app.use('/api/chat', chatRouter);
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: '', // Your frontend url here (Astro, React, vanilla HTML)
+    origin: 'http://localhost:3000', // Your frontend url here
     methods: ["GET", "POST"]
   },
 });
@@ -38,7 +38,7 @@ mongoose
     chatSocket(io);
 
     // Start the server
-    const PORT = process.env.PORT || 3000;
+    const PORT = process.env.PORT || 3001;
     server.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`);
     });
