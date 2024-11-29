@@ -17,7 +17,7 @@
 
 ### Part II (With rooms)
 
-9. Continuing on the same set-up from **Part I**, create 3 rooms which the user can choose from on the frontend.
+9. Continuing on the same set-up from **Part I**, create 3 rooms which the user can choose from on the frontend. You can use buttons or a dropdown select.
 10. Create events for `join room` and `leave room` in your backend.
 11. Update your `chat.socket.ts` so that your backend only emits the data object to clients of rooms.
 12. Update the rest of your backend to support rooms. Such as adding a new function in your controller called `getMessagesByRoom` and the corresponding route.
