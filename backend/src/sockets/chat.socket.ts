@@ -3,27 +3,36 @@ import { Chat } from '../models/chat.model';
 
 const setupChatSocket = (io: Server) => {
   io.on('connect', (socket: Socket) => {
-    // On connect
     console.log(`User connected: ${socket.id}`);
 
-    // Listen to 'sendMessage' event
-    socket.on('chat', async (data) => {
-      const { username, message } = data;
 
+    socket.on('joinRoom', async (room: string) => {
+      socket.join(room);
+      console.log(`User ${socket.id} joined room: ${room}`);
+
+      const messages = await Chat.find({ room }).exec();
+      socket.emit('chatHistory', messages);
+
+
+    });
+
+    socket.on('leaveRoom', (room: string) => {
+      socket.leave(room);
+      console.log(`User ${socket.id} left room: ${room}`);
+
+    });
+
+    socket.on('chat', async (data) => {
+      const { username, message, room } = data;
       try {
-        // Save message to MongoDB
-        const chat = new Chat({ username, message });
+        const chat = new Chat({ username, message, room });
         await chat.save();
-        // Broadcast the chat object to all connected clients via the newMessage event
-        io.emit('chat', chat);
-        // For room-based broadcast
-        // io.to(data.room).emit('newMessage', chat)
+        io.to(room).emit('chat', chat);
       } catch (error) {
         console.error('Error saving chat:', error);
       }
     });
 
-    // On disconnect
     socket.on('disconnect', () => {
       console.log(`User disconnected: ${socket.id}`);
     });

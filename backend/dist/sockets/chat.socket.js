@@ -12,25 +12,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chat_model_1 = require("../models/chat.model");
 const setupChatSocket = (io) => {
     io.on('connect', (socket) => {
-        // On connect
         console.log(`User connected: ${socket.id}`);
-        // Listen to 'sendMessage' event
+        socket.on('joinRoom', (room) => __awaiter(void 0, void 0, void 0, function* () {
+            socket.join(room);
+            console.log(`User ${socket.id} joined room: ${room}`);
+            const messages = yield chat_model_1.Chat.find({ room }).exec();
+            socket.emit('chatHistory', messages);
+        }));
+        socket.on('leaveRoom', (room) => {
+            socket.leave(room);
+            console.log(`User ${socket.id} left room: ${room}`);
+        });
         socket.on('chat', (data) => __awaiter(void 0, void 0, void 0, function* () {
-            const { username, message } = data;
+            const { username, message, room } = data;
             try {
-                // Save message to MongoDB
-                const chat = new chat_model_1.Chat({ username, message });
+                const chat = new chat_model_1.Chat({ username, message, room });
                 yield chat.save();
-                // Broadcast the chat object to all connected clients via the newMessage event
-                io.emit('chat', chat);
-                // For room-based broadcast
-                // io.to(data.room).emit('newMessage', chat)
+                io.to(room).emit('chat', chat);
             }
             catch (error) {
                 console.error('Error saving chat:', error);
             }
         }));
-        // On disconnect
         socket.on('disconnect', () => {
             console.log(`User disconnected: ${socket.id}`);
         });
